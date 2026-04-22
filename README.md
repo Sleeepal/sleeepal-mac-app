@@ -47,6 +47,16 @@ dist/ClaudeCodeMenuBar.app
 - It modifies `~/.zshrc` when switching the default key mode.
 - AppleScript is used to open Terminal and start CLI commands.
 
+## Release Process
+
+1. Open the repository's `Actions` tab on GitHub.
+2. Run the `Release Build` workflow manually.
+3. Enter a version string such as `v0.1.0`.
+4. Download the generated zip artifacts from the workflow run.
+5. Create a GitHub Release with the same tag and attach the generated artifacts.
+
+The repository also includes GitHub release category configuration in `.github/release.yml` for cleaner release notes.
+
 ## Repository Role
 
 This repository contains the macOS utility app. The main Sleeepal website lives separately at [sleeepal.com](https://sleeepal.com).
