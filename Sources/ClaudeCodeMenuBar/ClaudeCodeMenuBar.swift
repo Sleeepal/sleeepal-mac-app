@@ -52,6 +52,7 @@ final class AppState: ObservableObject {
     @Published var endpoint = "https://api.aigocode.com"
     @Published var keyMode: KeyMode = .unknown
     @Published var lastAction = "就绪"
+    let buildMetadata = BuildMetadata.current
 
     private let fileManager = FileManager.default
     private let zshrcPath = NSString(string: "~/.zshrc").expandingTildeInPath
@@ -201,6 +202,9 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Claude Code Shell")
                     .font(.headline)
+                Text(appState.buildMetadata.stamp)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
                 Text("CLI: \(appState.claudeCLIPath)")
                     .font(.caption)
                     .foregroundStyle(.secondary)

@@ -28,10 +28,17 @@ Build a release app bundle:
 ./Scripts/build-app.sh
 ```
 
-This outputs the app bundle to:
+This outputs the app bundle and a versioned zip archive to:
 
 ```bash
 dist/ClaudeCodeMenuBar.app
+dist/ClaudeCodeMenuBar-<version>.zip
+```
+
+The menu home now shows the app version, build number, and packaging time. For a local release-style build, you can inject the same metadata that GitHub Actions uses:
+
+```bash
+APP_VERSION=v0.1.0 APP_BUILD_NUMBER=42 ./Scripts/build-app.sh
 ```
 
 ## Project Structure
@@ -54,6 +61,8 @@ dist/ClaudeCodeMenuBar.app
 3. Enter a version string such as `v0.1.0`.
 4. Download the generated zip artifacts from the workflow run.
 5. Create a GitHub Release with the same tag and attach the generated artifacts.
+
+The workflow passes the requested release version into the app bundle, launcher bundle, and packaged archive names, so the shipped artifact and the in-app version stamp stay aligned.
 
 The repository also includes GitHub release category configuration in `.github/release.yml` for cleaner release notes.
 
