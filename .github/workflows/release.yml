@@ -24,9 +24,15 @@ jobs:
 
       - name: Build menu bar app
         run: ./Scripts/build-app.sh
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          APP_BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Build launcher app
         run: ./Scripts/build-claude-launcher.sh
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          APP_BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Archive app bundles
         run: |
