@@ -21,6 +21,8 @@ swift build
 - Keep commit messages short and descriptive
 - Explain user-visible behavior changes in the PR description
 - Include screenshots when changing menu bar UI or settings UI
+- Open a pull request instead of pushing directly to `main`
+- Prefer squash merge so the default branch history stays clean
 
 ## Issues
 
