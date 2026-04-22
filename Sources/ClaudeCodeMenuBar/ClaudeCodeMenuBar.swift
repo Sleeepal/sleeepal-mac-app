@@ -56,6 +56,10 @@ final class AppState: ObservableObject {
     private let fileManager = FileManager.default
     private let zshrcPath = NSString(string: "~/.zshrc").expandingTildeInPath
     private let launcherAppPath = NSString(string: "~/Applications/ClaudeCodeLauncher.app").expandingTildeInPath
+    private let managedBlockStart = "# >>> ClaudeCodeMenuBar managed ANTHROPIC_API_KEY >>>"
+    private let managedBlockEnd = "# <<< ClaudeCodeMenuBar managed ANTHROPIC_API_KEY <<<"
+    private let primaryExportLine = "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_PRIMARY\""
+    private let backupExportLine = "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_BACKUP\""
 
     init() {
         refreshStatus()
@@ -70,9 +74,9 @@ final class AppState: ObservableObject {
             return
         }
 
-        if zshrc.contains("export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_PRIMARY\"") {
+        if zshrc.contains(primaryExportLine) {
             keyMode = .primary
-        } else if zshrc.contains("export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_BACKUP\"") {
+        } else if zshrc.contains(backupExportLine) {
             keyMode = .backup
         } else {
             keyMode = .unknown
@@ -123,14 +127,27 @@ final class AppState: ObservableObject {
             return
         }
 
-        zshrc = zshrc.replacingOccurrences(
-            of: "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_PRIMARY\"",
-            with: "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_\(mode == .primary ? "PRIMARY" : "BACKUP")\""
-        )
-        zshrc = zshrc.replacingOccurrences(
-            of: "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_BACKUP\"",
-            with: "export ANTHROPIC_API_KEY=\"$CLAUDE_CODE_API_KEY_\(mode == .primary ? "PRIMARY" : "BACKUP")\""
-        )
+        let selectedExportLine = mode == .primary ? primaryExportLine : backupExportLine
+        let managedBlock = """
+        \(managedBlockStart)
+        \(selectedExportLine)
+        \(managedBlockEnd)
+        """
+
+        if let managedRange = zshrc.range(of: managedBlockStart) {
+            if let endRange = zshrc.range(of: managedBlockEnd, range: managedRange.lowerBound..<zshrc.endIndex) {
+                let blockRange = managedRange.lowerBound..<endRange.upperBound
+                zshrc.replaceSubrange(blockRange, with: managedBlock)
+            }
+        } else if zshrc.contains(primaryExportLine) || zshrc.contains(backupExportLine) {
+            zshrc = zshrc.replacingOccurrences(of: primaryExportLine, with: selectedExportLine)
+            zshrc = zshrc.replacingOccurrences(of: backupExportLine, with: selectedExportLine)
+        } else {
+            if !zshrc.hasSuffix("\n") {
+                zshrc.append("\n")
+            }
+            zshrc.append("\n\(managedBlock)\n")
+        }
 
         do {
             try zshrc.write(toFile: zshrcPath, atomically: true, encoding: .utf8)

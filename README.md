@@ -1,6 +1,6 @@
-# Sleeepal Mac App
+# ClaudeCodeMenuBar
 
-Swift menu bar app for launching and managing the local Claude Code workflow on macOS.
+Swift menu bar app for launching and managing a local Claude Code workflow on macOS.
 
 ## What It Does
 
@@ -47,6 +47,6 @@ dist/ClaudeCodeMenuBar.app
 - It modifies `~/.zshrc` when switching the default key mode.
 - AppleScript is used to open Terminal and start CLI commands.
 
-## Website
+## Repository Role
 
-Main project site: [sleeepal.com](https://sleeepal.com)
+This repository contains the macOS utility app. The main Sleeepal website lives separately at [sleeepal.com](https://sleeepal.com).
