@@ -1,0 +1,42 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version, for example v0.1.0
+        required: true
+        type: string
+
+jobs:
+  build-release-artifacts:
+    name: Build Release Artifacts
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build menu bar app
+        run: ./Scripts/build-app.sh
+
+      - name: Build launcher app
+        run: ./Scripts/build-claude-launcher.sh
+
+      - name: Archive app bundles
+        run: |
+          mkdir -p release-artifacts
+          ditto -c -k --sequesterRsrc --keepParent dist/ClaudeCodeMenuBar.app "release-artifacts/ClaudeCodeMenuBar-${{ inputs.version }}.zip"
+          ditto -c -k --sequesterRsrc --keepParent dist/ClaudeCodeLauncher.app "release-artifacts/ClaudeCodeLauncher-${{ inputs.version }}.zip"
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sleeepal-mac-app-${{ inputs.version }}
+          path: release-artifacts/
+          if-no-files-found: error
